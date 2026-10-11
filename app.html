@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moth math - calculators</title>
+<style>
+  :root { --accent: #7a5c3e; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, 'Times New Roman', serif; background: #faf8f5; color: #2f2a24; line-height: 1.55; }
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 20px 64px; }
+  h1 { font-size: 2rem; margin: 0 0 8px; color: var(--accent); }
+  .lede { margin: 0 0 28px; max-width: 640px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  section { background: #fff; border: 1px solid #e5ddd2; border-radius: 8px; padding: 20px 22px; }
+  h2 { font-size: 1.15rem; margin: 0 0 6px; }
+  .hint { font-size: 0.9rem; color: #7d6f5d; margin: 0 0 14px; }
+  label { display: block; font-size: 0.9rem; margin: 10px 0 3px; }
+  input { width: 100%; padding: 8px 10px; font-size: 1rem; border: 1px solid #d0c3b0; border-radius: 5px; font-family: inherit; }
+  button { margin-top: 16px; width: 100%; padding: 11px; background: var(--accent); color: #fff; border: 0; border-radius: 6px; font-size: 1rem; cursor: pointer; font-family: inherit; }
+  button:hover { filter: brightness(1.08); }
+  .out { margin-top: 14px; font-size: 1rem; min-height: 1.4em; }
+  .out.err { color: #a32222; }
+  footer { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; font-size: 0.85rem; color: #a2947f; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Moth math</h1>
+  <p class="lede">The trap count, the freezer calendar and the wash-versus-dry-clean bill for a clothes moth outbreak. Exact counting, every borrowed number labeled.</p>
+  <div class="grid">
+    <section>
+      <h2>Trap plan</h2>
+      <p class="hint">Pheromone traps across the year.</p>
+      <label for="t-wardrobes">Wardrobes to watch</label>
+      <input id="t-wardrobes" type="number" value="3" min="0" step="1">
+      <label for="t-life">Trap life (days)</label>
+      <input id="t-life" type="number" value="90" min="0" step="15">
+      <label for="t-price">Price per trap (dollars)</label>
+      <input id="t-price" type="number" value="6" min="0" step="1">
+      <button id="t-go">Count the traps</button>
+      <div class="out" id="t-out"></div>
+    </section>
+    <section>
+      <h2>Freeze plan</h2>
+      <p class="hint">Woolens through the freezer, load by load.</p>
+      <label for="f-items">Items to freeze</label>
+      <input id="f-items" type="number" value="34" min="0" step="1">
+      <label for="f-load">Items per freezer load</label>
+      <input id="f-load" type="number" value="6" min="0" step="1">
+      <label for="f-hours">Hours per load</label>
+      <input id="f-hours" type="number" value="72" min="0" step="12">
+      <button id="f-go">Plan the freezer</button>
+      <div class="out" id="f-out"></div>
+    </section>
+    <section>
+      <h2>Wash plan</h2>
+      <p class="hint">The washer against the dry-clean bill.</p>
+      <label for="w-items">Items to clean</label>
+      <input id="w-items" type="number" value="34" min="0" step="1">
+      <label for="w-load">Items per washer load</label>
+      <input id="w-load" type="number" value="6" min="0" step="1">
+      <label for="w-cents">Washer load cost (cents)</label>
+      <input id="w-cents" type="number" value="150" min="0" step="25">
+      <label for="w-dry">Dry-clean per item (cents)</label>
+      <input id="w-dry" type="number" value="1200" min="0" step="100">
+      <button id="w-go">Price the wash</button>
+      <div class="out" id="w-out"></div>
+    </section>
+  </div>
+</main>
+<footer>Built by the app factory. <a href="index.html">About</a> &middot; <a href="https://github.com/iLanis-agent/mothmath">Source</a></footer>
+<script src="engine.js"></script>
+<script>
+function num(id){ return parseFloat(document.getElementById(id).value); }
+function show(id, r, render){
+  var el = document.getElementById(id);
+  if (r.error) { el.textContent = r.error; el.classList.add('err'); }
+  else { el.textContent = render(r); el.classList.remove('err'); }
+}
+document.getElementById('t-go').addEventListener('click', function(){
+  show('t-out', MothMath.trapPlan(num('t-wardrobes'),num('t-life'),num('t-price')), function(r){ return MothMath.renderTrap(r, num('t-wardrobes'),num('t-life'),num('t-price')); });
+});
+document.getElementById('f-go').addEventListener('click', function(){
+  show('f-out', MothMath.freezePlan(num('f-items'),num('f-load'),num('f-hours')), function(r){ return MothMath.renderFreeze(r, num('f-items'),num('f-load'),num('f-hours')); });
+});
+document.getElementById('w-go').addEventListener('click', function(){
+  show('w-out', MothMath.washPlan(num('w-items'),num('w-load'),num('w-cents'),num('w-dry')), function(r){ return MothMath.renderWash(r, num('w-items'),num('w-load'),num('w-cents'),num('w-dry')); });
+});
+</script>
+</body>
+</html>
